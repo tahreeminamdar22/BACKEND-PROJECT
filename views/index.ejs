@@ -1,0 +1,41 @@
+<%- include('partials/header.ejs'); -%>
+<div>
+    <h1 id="heading">TODAY</h1>
+    <div class="box">
+        <ul id="list">
+            <% items.forEach(function(item) { %>
+                <li class="task-item">
+                    <form action="/edit/<%= item.id %>" method="post" class="task-form">
+                        <input type="checkbox" name="item<%= item.id %>" id="checkbox<%= item.id %>" value="<%= item.title %>" data-id="<%= item.id %>" onClick="isChecked(this)">
+                        <input type="text" name="newTitle" value="<%= item.title %>" id="newTitle<%= item.id %>" >
+                        <button type="submit" class="edit"><i class="fa-solid fa-pen"></i></button>
+                    </form>
+                    <form action="/delete/<%= item.id %>" method="post" class="task-form">
+                        <button type="submit" class="delete"><i class="fa-solid fa-trash"></i></button>
+                    </form>
+                </li>
+            <% }); %>
+        </ul>
+        <ul></ul>
+        <form action="/add" method="post">
+            <input type="text" placeholder="Enter Task" name="newTask">
+            <button type="submit" class="add"><i class="fa-solid fa-plus"></i></button>
+        </form>
+    </div>
+</div>
+<script>
+   function isChecked(checkbox) {
+    let id = checkbox.getAttribute("data-id");
+    let editable = document.getElementById("newTitle" + id);
+    if (editable) {
+        if (checkbox.checked) {
+            editable.style.textDecoration = "line-through";
+        } else {
+            editable.style.textDecoration = "none";
+        }
+    } else {
+        console.error("Editable element not found with id: newTitle" + id);
+    }
+}
+</script>
+<%- include('partials/footer.ejs'); -%>
