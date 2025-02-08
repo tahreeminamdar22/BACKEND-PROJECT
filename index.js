@@ -1,80 +1,87 @@
 import express from "express";
 import bodyParser from "body-parser";
-import pg from "pg";
 import dotenv from "dotenv";
-
-
+import { createClient } from '@supabase/supabase-js';
+import { injectSpeedInsights } from '@vercel/speed-insights';
+ 
+injectSpeedInsights();
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 dotenv.config();
-const dbConfig = {
-    user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
-};
 
-const db = new pg.Client(dbConfig);
-db.connect((err) => {
-    if (err) {
-        console.error("connection error", err);
-        return;
-    }
-    console.log("connected");
-});
+// Set up Supabase client
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Middleware to parse JSON and URL-encoded payloads
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(express.static("public"));
 
 app.set("view engine", "ejs");
 
+// Endpoint to render the main page
 app.get("/", async (req, res) => {
-    try {
-        const result = await db.query("SELECT * FROM items ORDER BY id ASC");
-        const items = result.rows;
-        res.render("index", { items: items });
-    } catch (err) {
-        console.log(err);
-        res.status(500).send("Server Error");
+  try {
+    const { data, error } = await supabase.from('items').select().order('id', { ascending: true });
+    if (error) {
+      throw error;
     }
+    res.render("index", { items: data });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Server Error");
+  }
 });
 
+// Endpoint to add a new item
 app.post("/add", async (req, res) => {
-    const newItem = req.body.newTask;
-    try {
-        await db.query("INSERT INTO items (title) VALUES ($1)", [newItem]);
-        res.redirect("/");
-    } catch (err) {
-        console.log(err);
-        res.status(500).send("Server Error");
+  const newItem = req.body.newTask;
+  try {
+    const { data, error } = await supabase.from('items').insert([{ title: newItem }]);
+    if (error) {
+      throw error;
     }
+    res.redirect("/");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Server Error");
+  }
 });
 
+// Endpoint to edit an existing item
 app.post("/edit/:id", async (req, res) => {
-    const id = req.params.id;
-    const newTitle = req.body.newTitle;
-
-    try {
-        await db.query("UPDATE items SET title = $1 WHERE id = $2", [newTitle, id]);
-        res.redirect("/");
-    } catch (err) {
-        console.error("Error updating item:", err);
-        res.status(500).send("Server Error:" + err.message);
+  const id = req.params.id;
+  const newTitle = req.body.newTitle;
+  try {
+    const { data, error } = await supabase.from('items').update({ title: newTitle }).eq('id', id);
+    if (error) {
+      throw error;
     }
+    res.redirect("/");
+  } catch (err) {
+    console.error("Error updating item:", err);
+    res.status(500).send("Server Error:" + err.message);
+  }
 });
 
+// Endpoint to delete an item
 app.post("/delete/:id", async (req, res) => {
-    const id = req.params.id;
-    try {
-        await db.query("DELETE FROM items WHERE id = $1", [id]);
-        res.redirect("/");
-    } catch (err) {
-        console.log(err);
-        res.status(500).send("Server Error");
+  const id = req.params.id;
+  try {
+    const { data, error } = await supabase.from('items').delete().eq('id', id);
+    if (error) {
+      throw error;
     }
+    res.redirect("/");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Server Error");
+  }
 });
 
+// Start the server
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on http://localhost:${port}`);
 });
