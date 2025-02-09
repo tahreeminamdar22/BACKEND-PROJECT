@@ -1,7 +1,8 @@
 import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
-import pool from "./db.js"; // Import Supabase connection
+import pool from "./db.js";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 const app = express();
@@ -9,6 +10,9 @@ const port = 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+const __filename= fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
 // ✅ Connect to Supabase
