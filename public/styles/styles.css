@@ -1,9 +1,11 @@
 html {
-    background-color: #aebdfa;
-    background-image: -webkit-linear-gradient(70deg, #947fb7 50%, #a7b1db 50%);
-    min-height: 1000px;
-    font-family: "helvetica neue";
+  background-color: #fffcf9; /* very light pastel peach */
+  background-image: linear-gradient(180deg,  #ffcbf2, #c0fdfb); /* pastel peach to pastel blue to pastel pink to pastel green */
+  /*min-height: 1000px; */
+  font-family: "helvetica neue";
 }
+
+
 
   body {
     display: flex;
@@ -16,14 +18,15 @@ html {
     flex: 1 0 auto;
   }
   h1 {
-    color: #fff;
+    color: #5c5c5c;
     padding: 10px;
   }
   
   .box {
     max-width: 400px;
     margin: 50px auto;
-    background: white;
+    background-color:#a683e3;/* Pastel lavender */
+border: 1px solid #d3c4d8;
     border-radius: 5px;
     box-shadow: 5px 5px 15px -5px rgba(0, 0, 0, 0.3);
   }
@@ -67,12 +70,12 @@ html {
     width: 50px;
     border-radius: 50%;
     border-color: transparent;
-    background-color: #a683e3;
-    color: #fff;
+    background-color: #fffcf9;
+    color: #5c5c5c;
     font-size: 30px;
     border-width: 0;
   }
-  
+ 
   .task-item {
     display: flex;
     align-items: center;

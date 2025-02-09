@@ -1,6 +1,12 @@
-import postgres from 'postgres'
+import pg from "pg";
+import dotenv from "dotenv";
+dotenv.config();
+const pool = new pg.Pool({
+    connectionString: process.env.DATABASE_URL, 
+    ssl: {
+        require: true,
+        rejectUnauthorized: false,
+},
+});
 
-const connectionString = process.env.DATABASE_URL
-const sql = postgres(connectionString)
-
-export default sql
+export default pool;

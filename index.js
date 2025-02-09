@@ -1,77 +1,65 @@
 import express from "express";
 import bodyParser from "body-parser";
-import pg from "pg";
 import dotenv from "dotenv";
+import pool from "./db.js"; // Import Supabase connection
 
-
+dotenv.config();
 const app = express();
 const port = 3000;
 
-dotenv.config();
-const dbConfig = {
-    user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
-};
-
-const db = new pg.Client(dbConfig);
-db.connect((err) => {
-    if (err) {
-        console.error("connection error", err);
-        return;
-    }
-    console.log("connected");
-});
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
-
 app.set("view engine", "ejs");
 
+// ✅ Connect to Supabase
+pool.connect()
+  .then(() => console.log("Connected to Supabase"))
+  .catch((err) => console.error("Connection error", err));
+
+// ✅ Fetch all items
 app.get("/", async (req, res) => {
     try {
-        const result = await db.query("SELECT * FROM items ORDER BY id ASC");
-        const items = result.rows;
-        res.render("index", { items: items });
+        const result = await pool.query("SELECT * FROM items ORDER BY id ASC");
+        res.render("index", { items: result.rows });
     } catch (err) {
-        console.log(err);
+        console.error(err);
         res.status(500).send("Server Error");
     }
 });
 
+// ✅ Add new item
 app.post("/add", async (req, res) => {
     const newItem = req.body.newTask;
     try {
-        await db.query("INSERT INTO items (title) VALUES ($1)", [newItem]);
+        await pool.query("INSERT INTO items (title) VALUES ($1)", [newItem]);
         res.redirect("/");
     } catch (err) {
-        console.log(err);
+        console.error(err);
         res.status(500).send("Server Error");
     }
 });
 
+// ✅ Edit item
 app.post("/edit/:id", async (req, res) => {
     const id = req.params.id;
     const newTitle = req.body.newTitle;
-
     try {
-        await db.query("UPDATE items SET title = $1 WHERE id = $2", [newTitle, id]);
+        await pool.query("UPDATE items SET title = $1 WHERE id = $2", [newTitle, id]);
         res.redirect("/");
     } catch (err) {
         console.error("Error updating item:", err);
-        res.status(500).send("Server Error:" + err.message);
+        res.status(500).send("Server Error: " + err.message);
     }
 });
 
+// ✅ Delete item
 app.post("/delete/:id", async (req, res) => {
     const id = req.params.id;
     try {
-        await db.query("DELETE FROM items WHERE id = $1", [id]);
+        await pool.query("DELETE FROM items WHERE id = $1", [id]);
         res.redirect("/");
     } catch (err) {
-        console.log(err);
+        console.error(err);
         res.status(500).send("Server Error");
     }
 });
