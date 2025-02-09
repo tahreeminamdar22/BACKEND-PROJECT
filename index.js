@@ -20,7 +20,7 @@ pool.connect()
 app.get("/", async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM items ORDER BY id ASC");
-        res.render("index", { items: result.rows });
+        res.render("index.ejs", { items: result.rows });
     } catch (err) {
         console.error(err);
         res.status(500).send("Server Error");
