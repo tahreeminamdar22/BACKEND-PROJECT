@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import pool from "./db.js";
 import { fileURLToPath } from "url";
+import path  from "path";
 
 dotenv.config();
 const app = express();
