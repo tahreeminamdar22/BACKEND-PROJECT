@@ -54,3 +54,6 @@ PORT=5000
 ###  4️⃣ **Run Server**
 node index.js
 
+ ## 🤝 Contributing
+Contributions are welcome! If you find a bug or want to improve something, feel free to fork this repo, make changes, and submit a pull request.
+**🚀 If you found this project useful, don't forget to ⭐ the repo!**
