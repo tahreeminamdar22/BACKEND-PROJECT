@@ -38,12 +38,12 @@ A simple and efficient **RESTful API for managing a Todo List**, built with **No
 To run this project locally, follow these steps:  
 
 ### 1️⃣ Clone the repository  
-```bash
+
 git clone https://github.com/tahreeminamdar22/backend-project.git
 cd backend-project
 
 ### 2️⃣ **Install Dependencies**
-```bash
+
 npm install
 
 ###  3️⃣**Setup Environment Variables**
